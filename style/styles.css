@@ -1,0 +1,170 @@
+body {
+  background-color: black;
+  color: black;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.visibleIfLoggedIn {
+  display:none;
+}
+
+a {
+	font-weight: bold;
+  color: #000099;
+}
+a:link, a:visited, a:active {text-decoration: none;}
+a:hover {text-decoration: underline;} 
+
+input {
+  width: 200px;
+}
+
+.floatRight {
+  float: right;
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
+.floatLeft {
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.thumbnailContainer {
+  position:relative;
+}
+.thumnailImage {
+  position:absolute;
+  top: 0px;
+  left: 0px;
+  width: 300px;
+  height: 100px;
+}
+.thumnailOverlayRect {
+  position:absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 40;
+  width: 300px;
+  height: 100px;
+  background-color: rgb(200, 200, 200);
+  background-color: rgba(255, 255, 255, .6);
+}
+.thumnailOverlayBar {
+  color: white;
+  position:absolute;
+  top: 0px;
+  left: 150px;
+  z-index: 40;
+  width: 150px;
+  height: 100px;
+  background-color: rgb(255, 255, 255,);
+  background-color: rgba(255, 255, 255, .8);
+  display: none; /*by default*/
+}
+.thumnailOverlay {
+  position:absolute;
+  top: 30px;
+  left: 130px;
+  z-index: 50;
+}
+.thumnailOverlayUserimage {
+  position:absolute;
+  top: 0px;
+  left: 250px;
+  z-index: 50;
+  display: none; /*by default*/
+
+}
+.whiteBox {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background-color: rgb(255, 255, 255);
+  background-color: rgba(255, 255, 255, .9);
+  border: 1px solid #000000;
+  z-index: 20;
+  display: none; /*by default*/
+  
+  position: absolute;
+  text-align: left;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  left: 50%;
+  width: 330px;
+  margin-left: -305px;
+  
+  overflow: auto;
+}
+
+#rightBar {
+  position:absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  width: 200px;
+  padding: 20px;
+  background-color: rgb(240, 240, 240);
+  background-color: rgba(240, 240, 240, 0.8);
+  border-left: 1px solid rgb(240, 240, 240);
+  overflow: auto; 
+  z-index: 10;
+}
+
+#disableClickOnGoogleIcon{
+  position:absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100px;
+  height:30px;
+  z-index: 5;
+}
+
+
+
+#commentBox {
+  overflow: auto;
+  display: none; /*by default*/
+}
+#streetView {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+#profileImage {
+  float:left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+#profileName {
+  font-size: 16px;
+}
+#profileText {
+}
+#mainBox {
+  top: 50%;
+  height: 450px;
+  margin-top: -235px;
+}
+.middleBottomBox {
+  bottom: 20px;
+}
+
+#puzzleList {
+}
+.accordion h3{
+  background-color: #ffffff;
+  color: #000044;
+  margin-left: -20px; 
+  margin-right: -20px; 
+  padding-left: 20px; 
+  padding-right: 20px; 
+  padding-top: 3px; 
+  padding-bottom: 3px; 
+  cursor: pointer;
+}
