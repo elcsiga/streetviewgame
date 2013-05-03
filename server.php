@@ -1,4 +1,6 @@
 <?php 
+  include('config.php');
+  $settings = new Settings();
 
   function createThumbnail($rec, $id) {
 
@@ -16,9 +18,8 @@
   }
 
   //////////////////////////////////
-
-  $sql = mysql_connect("localhost", "projecthost_hu","18asprojecthost") or die ("Nem tudok kapcsolódni!");
-  mysql_selectdb("projecthost_hu_holvagyok", $sql); 
+  $sql = mysql_connect($settings->dbhost,$settings->dbuser,$settings->dbpassword) or die ("Nem tudok kapcsolódni!");
+  mysql_selectdb($settings->db, $sql); 
   
   $table = isset($_GET["table"]) ? $_GET["table"] : "puzzles";
   $primaryId = ($table == "users") ? "userId" : "id";
@@ -100,6 +101,7 @@
   $userJoin = ($table != "users") ? " INNER JOIN `users` ON `$table`.`userId` = `users`.`userId` " : "";
  
   $q = "SELECT * FROM `$table`$userJoin $filter ORDER BY `$table`.`$primaryId` DESC";
+
   $result = mysql_query($q);
   
   $records = array();

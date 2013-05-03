@@ -1,0 +1,8 @@
+<?php
+class Settings {
+   public $dbhost = "localhost";
+   public $db = "db";
+   public $dbuser = "root";
+   public $dbpassword = "xxx";
+}
+?>
