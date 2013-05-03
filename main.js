@@ -239,19 +239,39 @@ function checkanswer() {
         }
       });
     
-      var r = Math.random();
-      if ( r< 0.2)
-        alert (tipp + "? Á, dehogy!");
-      else if ( r< 0.4)
-        alert (tipp + "? Nem-nem...");
-      else if ( r< 0.6)
-        alert (tipp + "? Dehogyis!");
-      else if ( r< 0.8)
-        alert (tipp + "? Nem jó!");
-      else 
-        alert (tipp + "? Végképp nem!");
+      var levenshteinDistance = levenshtein( tipp.toUpperCase(), currentPuzzle["answer"].toUpperCase() );
+      var acceptableDistance = currentPuzzle["answer"].length * 0.3; 
+      if (levenshteinDistance <= acceptableDistance) {
+      
+        var r = Math.random();
+        if ( r< 0.2)
+          alert (tipp + "? Hmm, közel jársz, nagyon közel...");
+        else if ( r< 0.4)
+          alert (tipp + "? Majdnem. Már majdnem eltaláltad.");
+        else if ( r< 0.6)
+          alert (tipp + "? Nem pont ez, de valami ilyesmi.");
+        else if ( r< 0.8)
+          alert (tipp + "? Forró! Forró!");
+        else 
+          alert (tipp + "? Igen! Illetve nem. De majdnem. ");
+        
+        $("#answer").focus();
+      }
+      else {
+        var r = Math.random();
+        if ( r< 0.2)
+          alert (tipp + "? Á, dehogy!");
+        else if ( r< 0.4)
+          alert (tipp + "? Nem-nem...");
+        else if ( r< 0.6)
+          alert (tipp + "? Hideg, hideg!");
+        else if ( r< 0.8)
+          alert (tipp + "? Nem jó!");
+        else 
+          alert (tipp + "? Végképp nem!");
 
-      $("#answer").val("");
+        $("#answer").val("").focus();
+      }
     }
   }
 }
