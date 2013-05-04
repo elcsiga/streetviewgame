@@ -460,5 +460,23 @@
             "testing",
             "xunit"
         ]
+    },
+    {
+        "name": "google/google-api-php-client",
+        "version": "0.6.0",
+        "version_normalized": "0.6.0.0",
+        "dist": {
+            "type": "tar",
+            "url": "http://google-api-php-client.googlecode.com/files/google-api-php-client-0.6.2.tar.gz",
+            "reference": null,
+            "shasum": null
+        },
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ]
+        }
     }
 ]

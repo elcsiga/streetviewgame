@@ -3,8 +3,24 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "42f0c4b27a33cf2cb0c0892a0eb42841",
+    "hash": "e05635e37aa853047d2db30bdf69efa9",
     "packages": [
+        {
+            "name": "google/google-api-php-client",
+            "version": "0.6.0",
+            "dist": {
+                "type": "tar",
+                "url": "http://google-api-php-client.googlecode.com/files/google-api-php-client-0.6.2.tar.gz",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            }
+        },
         {
             "name": "slim/slim",
             "version": "2.2.0",
