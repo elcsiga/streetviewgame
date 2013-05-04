@@ -32,7 +32,6 @@ function createThumbnail($rec, $id) {
 function insertRecord($table, $rec) {  
   $keys = array();
   $values = array();
-  print_r($rec);
   foreach ($rec as $key => $value) {
     $keys[] = "`$key`";
     $values[] = "'" . mysql_real_escape_string($value) . "'";
