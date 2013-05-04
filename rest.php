@@ -88,16 +88,31 @@ function getPuzzle($id) {
   return getRecords($query)[0];
 }
 
+function checkAnswer($answer,$puzzle){
+  if ($answer == $puzzle['answer']) {
+    return array("ok"=>true,"message"=>"Zsir, kiraly");
+  } else {
+    return array("ok"=>false,"message"=>"Nem, nem");
+  }
+}
+
 $app = new \Slim\Slim();
 $app->post('/puzzle/:id/solution',function($id) use ($app){
+    $puzzle = getPuzzle($id);
     $s = $app->request()->getBody();
     $data = json_decode($s,true);
+    $check = checkAnswer($data['answer'],$puzzle);
     $data['puzzleId'] = $id;
+    if ($check["ok"]){
+      $data['type'] = 1;
+    } else {
+      $data['type'] = 0;
+    }
     list($usec, $sec) = explode(" ", microtime());
     //    $data['date'] = $sec . $usec . "000";
-    var_dump($data);
     $id = insertRecord('guesses',$data);
-    echo json_encode(array('id'=> $id));    
+    $check['id'] = $id;
+    echo json_encode($check);    
   });
 $app->get('/puzzle/:id', function ($id) {
     echo json_encode(getPuzzle($id),JSON_PRETTY_PRINT);

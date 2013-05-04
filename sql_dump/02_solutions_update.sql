@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `guesses` (
   `answer` text collate utf8_hungarian_ci NOT NULL,
   `puzzleId` int(10) NOT NULL,
   `score` int(10) NOT NULL,
+  `type` int(4) NOT NULL,
   `date` bigint(20) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci AUTO_INCREMENT=9 ;
