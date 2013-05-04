@@ -124,8 +124,14 @@ $app->get('/puzzle/:id/thumbnail', function($id) use ($app) {
     }
     $app->response()->redirect('/thumbnails/'.$id.'.jpg', 303);
   });
-$app->get('/puzzles', function() {
-    $query = "select puzzles.*,users.userName from puzzles left join users ON  puzzles.userId = users.userId";
+$app->get('/puzzles', function() use ($app){
+    $userId = $app->request()->params("userId");
+    if (!$userId) {
+      $query = "select puzzles.*,users.userName from puzzles left join users ON  puzzles.userId = users.userId";
+    } else {
+      $query = "select distinct puzzles.*,guesses.score from puzzles left join guesses on guesses.puzzleId = puzzles.id and guesses.userId='116970004977969517646' and type = 1 order by guesses.type asc,puzzles.date asc";
+    }
+
     echo json_encode(getRecords($query));
   });
 $app->post('/puzzle', function() use ($app) {

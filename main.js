@@ -55,7 +55,7 @@ function renderPuzzle(puzzle) {
   var row = "<div id='item_"+key+"' class=thumbnailContainer>";
   row += "<a id='view_"+key+"' href='#'>";
 
-    if ( resolves[key] ) {
+    if ( resolves[key] || puzzle["score"] > 0) {
       row += "<div class = 'thumnailOverlayRect'></div>";
       row += "<img class = 'thumnailOverlay' src='style/resolved.png'>";
     }  
@@ -104,7 +104,7 @@ function renderPuzzle(puzzle) {
 function loadPuzzles() {
 
   currentPuzzle = null;
-  $.getJSON('rest.php/puzzles', function(data) {
+  $.getJSON('rest.php/puzzles?userId=' + currentProfile.id, function(data) {
     
     $("#answerBox").fadeOut("slow");
     $("#commentBox").fadeOut("slow");
@@ -224,7 +224,7 @@ function checkanswer() {
       var now = new Date().getTime();
       var wrongTipp = {
           "userId": (currentProfile ? currentProfile.id : "") ,
-	  "score" : 0,
+	  "score" : -1,
           "answer": tipp,
           "date" : now
       };
