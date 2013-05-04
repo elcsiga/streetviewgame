@@ -129,7 +129,7 @@ $app->get('/puzzles', function() use ($app){
     if (!$userId) {
       $query = "select puzzles.*,users.userName from puzzles left join users ON  puzzles.userId = users.userId";
     } else {
-      $query = "select distinct puzzles.*,guesses.score from puzzles left join guesses on guesses.puzzleId = puzzles.id and guesses.userId='116970004977969517646' and type = 1 order by guesses.type asc,puzzles.date asc";
+      $query = "select distinct puzzles.*,guesses.score from puzzles left join guesses on guesses.puzzleId = puzzles.id and guesses.userId='".mysql_real_escape_string($userId)."' and type = 1 order by guesses.type asc,puzzles.date asc";
     }
 
     echo json_encode(getRecords($query));
@@ -151,8 +151,9 @@ $app->delete('/puzzle/:id', function($id) {
   });
 
 $app->get('/user/:id', function ($id) {
-    $query = "select * from users where userId = '" . $id . "'";
-    echo json_encode(getRecords($query)[0], JSON_PRETTY_PRINT);
+    $query = "select users.*,sum(guesses.score) as score,count(guesses.score) as solved from users left join guesses on guesses.userId = users.userId and guesses.type=1 where users.userId = '" . mysql_real_escape_string($id) . "'";
+    $res = getRecords($query);
+    echo json_encode($res[0], JSON_PRETTY_PRINT);
   });
 $app->post('/user', function() use ($app) {
     $s = $app->request()->getBody();
