@@ -59,18 +59,6 @@ CREATE TABLE IF NOT EXISTS `wrongTipps` (
   `date` bigint(20) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
---
--- A tábla adatainak kiíratása `wrongTipps`
---
-CREATE TABLE IF NOT EXISTS `wrongTipps` (
-  `puzzleId` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
-  `wrongTipp` text collate utf8_hungarian_ci NOT NULL,
-  `date` bigint(20) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
-
-
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

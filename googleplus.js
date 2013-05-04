@@ -7,7 +7,7 @@ function getFullName(profile) {
 function updateAuthStatus() {
   
   if (currentProfile)
-    $.getJSON('server.php?table=users&userFilter='+currentProfile.id, function(data) {
+    $.getJSON('rest.php/user/'+currentProfile.id, function(data) {
       var userResolves = data.length > 0 && data[0].resolves ? JSON.parse(data[0].resolves) : {};
       
       if (!$.isEmptyObject(resolves) && $.isEmptyObject(userResolves)
@@ -15,8 +15,8 @@ function updateAuthStatus() {
         {
           var r = { "resolves" : JSON.stringify( resolves ) };
           $.ajax({
-            type: 'POST',
-            url: 'server.php?table=users&modify='+currentProfile.id,
+            type: 'PUT',
+            url: 'rest.php/user/' +  currentProfile.id,
             data: r,
             success: function(result) {
               console.log("Sikerült átvenni a megfejtéseket!");
@@ -169,8 +169,8 @@ var helper = (function() {
           };
    
           $.ajax({
-            type: 'POST',
-            url: 'server.php?table=users&replace',
+            type: 'PUT',
+            url: 'rest.php/user/' + currentProfile.id,
             data: userUpdateData,
             success: function(result) {
               updateAuthStatus();

@@ -1,5 +1,6 @@
 <?php 
   include('config.php');
+  require 'vendor/autoload.php';
   $settings = new Settings();
 
   function createThumbnail($rec, $id) {
@@ -58,7 +59,16 @@
   }   
 
   //////////////////////////////////
-  
+
+
+
+$app = new \Slim\Slim();
+$app->get('/puzzle/:id', function ($id) {
+    echo "Hello, $id";
+  });
+$app->run();
+
+function ignore() {  
   if (isset($_GET["insert"])) {
     insertRecord($table, $_POST);
     die("OK");
@@ -117,5 +127,5 @@
   }
 
   print "[\n".implode (",\n", $records)."\n]";
-
+}
 ?>

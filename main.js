@@ -34,7 +34,7 @@ function getUrlSearchParams() {
 }
 
 function loadComments()  {
-  $.getJSON('server.php?table=comments&puzzleFilter='+currentPuzzle["id"], function(data) {
+  $.getJSON('rest.php/puzzle/'+currentPuzzle["id"] + '/comment', function(data) {
     $("#commentList").html(data.length > 0 ? "<hr style='clear:both;'>" : "");
     $("#newCommentText").val("");
     
@@ -59,7 +59,7 @@ function renderPuzzle(puzzle) {
       row += "<div class = 'thumnailOverlayRect'></div>";
       row += "<img class = 'thumnailOverlay' src='style/resolved.png'>";
     }  
-    row += "<img src='thumbnails/"+key+".jpg' title='" + puzzle["label"] + "' alt='" + puzzle["label"] + "'>";
+    row += "<img src='rest.php/puzzle/" + key + "/thumbnail' title='" + puzzle["label"] + "' alt='" + puzzle["label"] + "'>";
 
   row += "</a><br>";
 
@@ -80,11 +80,11 @@ function renderPuzzle(puzzle) {
     showPuzzle(puzzle);
   });
 
-  $("#delete_"+key).click(function() {
+    $("#delete_"+key).click(function() {
     if (confirm("Biztos, hogy törölni szeretnéd ezt a rejtvényt? ("+puzzle["label"]+")")){
       $.ajax({
-        type: 'GET',
-        url: 'server.php?delete='+key ,
+        type: 'DELETE',
+        url: 'rest.php/puzzle/'+key ,
         success: function(result) {
           console.log("Sikerült törölni a rejtvényt! ("+result+")");
           loadPuzzles();
@@ -104,7 +104,7 @@ function renderPuzzle(puzzle) {
 function loadPuzzles() {
 
   currentPuzzle = null;
-  $.getJSON('server.php', function(data) {
+  $.getJSON('rest.php/puzzles', function(data) {
     
     $("#answerBox").fadeOut("slow");
     $("#commentBox").fadeOut("slow");
@@ -189,17 +189,20 @@ function checkanswer() {
          
       currentPuzzle.score = getScore();
      
-      resolves[currentPuzzle.id] = {
+      resolution = {
+          "userId": (currentProfile ? currentProfile.id : "") ,
           "score": currentPuzzle.score,
-          "resolvedDate" : now
+	  "answer" : tipp,
+          "date" : now
       };
+      resolves[currentPuzzle.id] = resolution;
+
       
       if (currentProfile) {
-        var r = { "resolves" : JSON.stringify( resolves ) };
         $.ajax({
           type: 'POST',
-          url: 'server.php?table=users&modify='+currentProfile.id,
-          data: r,
+          url: 'rest.php/puzzle/'+currentPuzzle.id+'/solution',
+          data: JSON.stringify(resolution),
           success: function(result) {
             console.log("Sikerült feltölteni a megfejtést!");
             showPuzzle(currentPuzzle);
@@ -220,16 +223,16 @@ function checkanswer() {
             
       var now = new Date().getTime();
       var wrongTipp = {
-        "userId": (currentProfile ? currentProfile.id : "") ,
-        "puzzleId": currentPuzzle.id,
-        "wrongTipp": tipp,
-        "date" : now
+          "userId": (currentProfile ? currentProfile.id : "") ,
+	  "score" : 0,
+          "answer": tipp,
+          "date" : now
       };
           
       $.ajax({
         type: 'POST',
-        url: 'server.php?table=wrongTipps&insert',
-        data: wrongTipp,
+        url: 'rest.php/puzzle/' + currentPuzzle.id + '/solution',
+        data: JSON.stringify(wrongTipp),
         success: function(result) {
           console.log("Sikerült feltölteni a rossz választ!");
         },
@@ -308,22 +311,28 @@ function submitPuzzle() {
     "pitch": pov.pitch
   };
         
-  var query;
-  if ( puzzleId > 0) {
-    query = "?modify="+puzzleId;
-  }
-  else {
-    puzzle["userId"] = currentProfile.id;
-    puzzle["date"] = new Date().getTime();
-    query = "?insert";  
-  }
+  type = '';
+  data = '';
+  url = '';
+    if ( puzzleId > 0) {
+	type = 'PUT';
+	data = puzzle;
+	url = 'rest.php/puzzle/' + puzzleId;
+    } else {
+	puzzle["userId"] = currentProfile.id;
+	puzzle["date"] = new Date().getTime();
+	type = 'POST';
+	url = 'rest.php/puzzle';
+	data = JSON.stringify(puzzle);
+    }
    
+
   $.ajax({
-    type: 'POST',
-    url: 'server.php'+ query,
-    data: puzzle,
+    type: type,
+    url: url,
+    data: data,
     success: function(result) {
-      console.log("Sikerült feltölteni a rejtvényt! (query:"+query+", result:"+result+")");
+      console.log("Sikerült feltölteni a rejtvényt! (result:"+result+")");
       loadPuzzles();
     },
     error: function(e) {
@@ -350,16 +359,15 @@ function submitComment() {
  
   var comment = {
     "userId" : currentProfile.id,
-    "puzzleId" : currentPuzzle["id"],
-    "afterResolved" : false,
+//    "afterResolved" : false,
     "content": commentText,
     "date" : new Date().getTime()
   };
           
   $.ajax({
     type: 'POST',
-    url: 'server.php?table=comments&insert',
-    data: comment,
+    url: 'rest.php/puzzle/' + currentPuzzle["id"] + '/comment',
+    data: JSON.stringify(comment),
     success: function(result) {
       console.log("Sikerült feltölteni a kommentet! (result:"+result+")");
       loadComments();
@@ -433,17 +441,16 @@ $(document).ready(function() {
   
   var urlSearchParams = getUrlSearchParams();
   if (urlSearchParams.puzzle) {
-
-    $.getJSON('server.php?view='+urlSearchParams.puzzle, function(data) {
-      if (data.length == 1) {
-        showPuzzle(data[0]);
-      } else {
-        alert("Nincs meg ez a rejtvény.");
-        loadPuzzles();
-      }
-
-
-    });
+    $.ajax({
+	dataType: "json",
+	url: 'rest.php/puzzle/'+urlSearchParams.puzzle,
+	success: function(data) {
+	    showPuzzle(data);
+	},
+	error: function(data) {
+	    alert("Nincs meg ez a rejtvény.");
+	    loadPuzzles();
+	}});
   }
   else
     loadPuzzles();
