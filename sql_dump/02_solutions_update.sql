@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS `guesses` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci AUTO_INCREMENT=9 ;
 
-alter table users drop column id;
+alter table users drop primary key;
 alter table users add id int(10) primary key NOT NULL AUTO_INCREMENT;
