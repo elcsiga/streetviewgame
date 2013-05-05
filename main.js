@@ -424,7 +424,37 @@ function startCreatingPuzzle() {
     }
   });
 }
-  
+
+function loadUser(){
+    $.ajax({
+	dataType: "json",
+	url: 'rest.php/user',
+	success: function(data) {
+	    console.log("User is logged in " + data);
+	    currentProfile = data;
+	    currentProfile['id'] = currentProfile['userId']
+	    initGame();
+	},
+	error: function(data) {
+	    alert("Logged out user.");
+	    initGame();
+	}});
+}  
+
+function initGame() {
+    $.ajax({
+	dataType: "json",
+	url: 'rest.php/puzzle/'+urlSearchParams.puzzle,
+	success: function(data) {
+	    showPuzzle(data);
+	},
+	error: function(data) {
+	    alert("Nincs meg ez a rejtvény.");
+	    loadPuzzles();
+	}});
+}  
+
+
 $(document).ready(function() {
 
   $('#disconnect').click(helper.disconnect);
@@ -451,6 +481,7 @@ $(document).ready(function() {
 	    alert("Nincs meg ez a rejtvény.");
 	    loadPuzzles();
 	}});
+
   }
   else
     loadPuzzles();

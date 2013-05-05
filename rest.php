@@ -1,4 +1,5 @@
 <?php 
+  session_start();
   include('config.php');
   require 'vendor/autoload.php';
   $settings = new Settings();
@@ -87,6 +88,15 @@ function getPuzzle($id) {
   $query = "select puzzles.*,users.userName from puzzles left join users ON puzzles.userId = users.userId where puzzles.id = " . mysql_real_escape_string($id);
   return getRecords($query)[0];
 }
+function getUser($id) {
+    $query = "select users.*,sum(guesses.score) as score,count(guesses.score) as solved from users left join guesses on guesses.userId = users.userId and guesses.type=1 where users.userId = '" . mysql_real_escape_string($id) . "'";
+    $res = getRecords($query);
+    if (count($res)==1 and !empty($res['userId'])){
+      return $res[0];
+    } else {
+      return array();
+    }
+}
 
 function checkAnswer($answer,$puzzle){
   if ($answer == $puzzle['answer']) {
@@ -150,11 +160,28 @@ $app->delete('/puzzle/:id', function($id) {
     deleteRecord('puzzles',$id,'id');
   });
 
-$app->get('/user/:id', function ($id) {
-    $query = "select users.*,sum(guesses.score) as score,count(guesses.score) as solved from users left join guesses on guesses.userId = users.userId and guesses.type=1 where users.userId = '" . mysql_real_escape_string($id) . "'";
-    $res = getRecords($query);
-    echo json_encode($res[0], JSON_PRETTY_PRINT);
+$app->get('/user/:id', function ($id) use ($app){
+    $res = getUser($id);
+    if (count($res) == 0) {
+      $app->response()->status(404);
+    } else {
+      echo json_encode($res, JSON_PRETTY_PRINT);
+    }
   });
+$app->get('/user',function() use ($app) {
+    if (isset($_SESSION['user'])) {
+         $res = getUser($_SESSION['user']);
+	 if (count($res) == 0) {
+	   $app->response()->status(404);
+	 } else {
+	   echo json_encode($res, JSON_PRETTY_PRINT);
+	 } 
+    }
+  });
+$app->get('/logout',function(){
+    unset($_SESSION['user']);
+  });
+
 $app->post('/user', function() use ($app) {
     $s = $app->request()->getBody();
     $user = json_decode($s,true);
@@ -174,6 +201,35 @@ $app->post('/puzzle/:id/comment', function($id) use ($app){
     $data['puzzleId'] = $id;
     $id = insertRecord('comments',$data);
     echo json_encode(array('id'=> $id));    
+  });
+$app->post('/login/google', function() use ($app,$config){
+    $code = $app->request()->getBody();
+
+    $client = new Google_Client();
+    $plus = new Google_PlusService($client);
+    $client->setClientId($settings->googleApiClientId);
+    $client->setClientSecret($settings->googleApiSecret);
+    $client->setRedirectUri('postmessage');
+    $client->authenticate($code);
+    $token = json_decode($client->getAccessToken());
+    $_SESSION['token'] =  json_encode($token);
+    $attributes = $client->verifyIdToken($token->id_token, $settings->googleApiClientId)->getAttributes();
+    $gplus_id = $attributes["payload"]["sub"];
+    $_SESSION['user'] = $gplus_id;
+    $user = getUser($gplus_id);
+    if (count($user)>0) {
+      echo json_encode($user);
+    } else {
+      $me = $plus->people->get('me');
+      $rec = array();
+      $rec['image'] = filter_var($me['image']['url'], FILTER_VALIDATE_URL);
+      $rec['userName'] = filter_var($me['displayName'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+      $res['userId'] = $gplus_id;
+      insertRecord('users',$rec);
+      $user = getUser($gplus_id);
+      echo json_encode($user);
+    }
+
   });
 $app->run();
 

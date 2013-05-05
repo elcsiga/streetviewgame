@@ -4,5 +4,7 @@ class Settings {
    public $db = "db";
    public $dbuser = "root";
    public $dbpassword = "xxx";
+   public $googleApiClientId = "";
+   public $googleApiSecret = "";
 }
 ?>

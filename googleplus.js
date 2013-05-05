@@ -5,9 +5,9 @@ function getFullName(profile) {
   return profile.name.familyName + " " + profile.name.givenName ;
 }
 function updateAuthStatus() {
-  
+ 
   if (currentProfile)
-    $.getJSON('rest.php/user/'+currentProfile.id, function(data) {
+/*    $.getJSON('rest.php/user/'+currentProfile.id, function(data) {
       var userResolves = data.length > 0 && data[0].resolves ? JSON.parse(data[0].resolves) : {};
       
       if (!$.isEmptyObject(resolves) && $.isEmptyObject(userResolves)
@@ -31,9 +31,9 @@ function updateAuthStatus() {
         else
           resolves = userResolves;
       
-      
+ */
       updateAuthBasedTexts();
-    });
+//    });
   else {
     var cookie = $.cookie(resolvesCookieName);
     resolves = (cookie) ? JSON.parse(cookie) : {};
@@ -45,9 +45,16 @@ function onSignInCallback(authResult) {
 }
 function updateAuthBasedTexts() {
   if (currentProfile) {
+      $('#profileImage').append(
+          $('<img src=\"' + currentProfile.image + '\">'));
+      $('#profileName').html(currentProfile.userName);
+
     $(".visibleIfLoggedIn").fadeIn("slow");
     $(".visibleIfNotLoggedIn").fadeOut("slow");  
   } else {
+      $('#profileImage').empty()
+      $('#profileName').empty()
+
     $(".visibleIfLoggedIn").fadeOut("slow");
     $(".visibleIfNotLoggedIn").fadeIn("slow");
   }
@@ -71,11 +78,33 @@ var helper = (function() {
     onSignInCallback: function(authResult) {
       gapi.client.load('plus','v1', function(){
 
-        if (authResult['access_token']) {
-          $('#authOps').fadeIn('slow');
-          $('#gConnect').fadeOut('slow');
-          helper.profile();
-          //helper.people();
+        if (authResult['access_token'] && authResult['code']) {
+	    console.log(authResult);
+	    $.ajax({
+		dataType: 'json',
+		type: 'POST',
+		url: 'rest.php/login/google',
+		success: function(result) {
+		    // Handle or verify the server response if necessary.
+		    
+		    // Prints the list of people that the user has allowed the app to know
+		    // to the console.
+		    console.log(result);
+		    currentProfile  = result;
+		    currentProfile['id'] = currentProfile['userId']
+		    updateAuthStatus();
+		    $('#authOps').fadeIn('slow');
+		    $('#gConnect').fadeOut('slow');		
+
+
+		    console.log(authResult);
+
+		},
+		processData: false,
+		data: authResult['code']
+	    });
+
+            //helper.people();
         } else if (authResult['error']) {
           // There was an error, which means the user is not signed in.
           // As an example, you can handle by writing to the console:
