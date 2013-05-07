@@ -104,7 +104,11 @@ function renderPuzzle(puzzle) {
 function loadPuzzles() {
 
   currentPuzzle = null;
-  $.getJSON('rest.php/puzzles?userId=' + currentProfile.id, function(data) {
+  var r = "";
+  if (currentProfile) {
+    r = "?userId=" + currentProfile.id
+  }
+  $.getJSON('rest.php/puzzles' + r, function(data) {
     
     $("#answerBox").fadeOut("slow");
     $("#commentBox").fadeOut("slow");
