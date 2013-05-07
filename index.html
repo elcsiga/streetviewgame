@@ -159,13 +159,15 @@
   
     <div id="gConnect" class="loginBox" >
       <button class="g-signin"
-          data-scope="https://www.googleapis.com/auth/plus.login"
-          data-requestvisibleactions="http://schemas.google.com/AddActivity"
-          data-clientId="705715470188.apps.googleusercontent.com"
-          data-callback="onSignInCallback"
-          data-theme="dark"
-          data-cookiepolicy="single_host_origin">
+              data-scope="https://www.googleapis.com/auth/plus.login"
+              data-requestvisibleactions="http://schemas.google.com/AddActivity"
+              data-clientId="705715470188.apps.googleusercontent.com"
+              data-callback="onSignInCallback"
+              data-theme="dark"
+	      data-accesstype="offline"
+              data-cookiepolicy="single_host_origin">
       </button>
+
     </div>
     <div id="authOps" class="loginBox" style="display:none">
       <span id="profileImage"></span>
