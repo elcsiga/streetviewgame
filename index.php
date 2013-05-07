@@ -25,7 +25,10 @@
   <script src="main.js" ></script>
 </head>
 <body itemscope itemtype="http://schema.org/WebApplication">
-
+<?php
+require_once("config.php");
+$settings = new Settings();
+?>
   <!-- STREET VIEW -->
   
   <div id=streetView></div>
@@ -161,7 +164,7 @@
       <button class="g-signin"
               data-scope="https://www.googleapis.com/auth/plus.login"
               data-requestvisibleactions="http://schemas.google.com/AddActivity"
-              data-clientId="705715470188.apps.googleusercontent.com"
+              data-clientId="<?php echo $settings->googleApiClientId; ?>"
               data-callback="onSignInCallback"
               data-theme="dark"
 	      data-accesstype="offline"

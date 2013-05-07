@@ -86,7 +86,12 @@ function getRecords($query) {
 
 function getPuzzle($id) { 
   $query = "select puzzles.*,users.userName from puzzles left join users ON puzzles.userId = users.userId where puzzles.id = " . mysql_real_escape_string($id);
-  return getRecords($query)[0];
+  $res = getRecords($query);
+  if (count($res)>0) {
+     return $res[0];
+  } else {
+     return array();
+  }
 }
 function getUser($id) {
     $query = "select users.*,sum(guesses.score) as score,count(guesses.score) as solved from users left join guesses on guesses.userId = users.userId and guesses.type=1 where users.userId = '" . mysql_real_escape_string($id) . "'";
@@ -202,10 +207,10 @@ $app->post('/puzzle/:id/comment', function($id) use ($app){
     $id = insertRecord('comments',$data);
     echo json_encode(array('id'=> $id));    
   });
-$app->post('/login/google', function() use ($app,$config){
+$app->post('/login/google', function() use ($app,$settings){
     $code = $app->request()->getBody();
 
-    $client = new Google_Client();
+    $client = new Google_Client(array());
     $plus = new Google_PlusService($client);
     $client->setClientId($settings->googleApiClientId);
     $client->setClientSecret($settings->googleApiSecret);
