@@ -96,7 +96,7 @@ function getPuzzle($id) {
 function getUser($id) {
     $query = "select users.*,sum(guesses.score) as score,count(guesses.score) as solved from users left join guesses on guesses.userId = users.userId and guesses.type=1 where users.userId = '" . mysql_real_escape_string($id) . "'";
     $res = getRecords($query);
-    if (count($res)==1 and !empty($res['userId'])){
+    if (count($res)==1 and !empty($res[0]['userId'])){
       return $res[0];
     } else {
       return array();
@@ -130,7 +130,7 @@ $app->post('/puzzle/:id/solution',function($id) use ($app){
     echo json_encode($check);    
   });
 $app->get('/puzzle/:id', function ($id) {
-    echo json_encode(getPuzzle($id),JSON_PRETTY_PRINT);
+    echo json_encode(getPuzzle($id));
   });
 $app->get('/puzzle/:id/thumbnail', function($id) use ($app) {
     if (!file_exists('thumbnails/' . $id )) {
@@ -159,7 +159,7 @@ $app->post('/puzzle', function() use ($app) {
 $app->put('/puzzle/:id', function ($id) use ($app) {
     $user = $app->request()->params();
     updateRecord('puzzles',$user,$id,'id');
-    echo json_encode(getPuzzle($id),JSON_PRETTY_PRINT);
+    echo json_encode(getPuzzle($id));
   });
 $app->delete('/puzzle/:id', function($id) {
     deleteRecord('puzzles',$id,'id');
@@ -170,7 +170,7 @@ $app->get('/user/:id', function ($id) use ($app){
     if (count($res) == 0) {
       $app->response()->status(404);
     } else {
-      echo json_encode($res, JSON_PRETTY_PRINT);
+      echo json_encode($res);
     }
   });
 $app->get('/user',function() use ($app) {
@@ -179,7 +179,7 @@ $app->get('/user',function() use ($app) {
 	 if (count($res) == 0) {
 	   $app->response()->status(404);
 	 } else {
-	   echo json_encode($res, JSON_PRETTY_PRINT);
+	   echo json_encode($res);
 	 } 
     }
   });
@@ -198,7 +198,7 @@ $app->put('/user/:id', function ($id) use ($app) {
     updateRecord('users',$user,$id,'userId');
   });
 $app->get('/puzzle/:id/comment', function($id){
-    echo json_encode(getRecords("select * from comments where puzzleId = " . $id),JSON_PRETTY_PRINT);
+    echo json_encode(getRecords("select * from comments where puzzleId = " . $id));
   });
 $app->post('/puzzle/:id/comment', function($id) use ($app){
     $s = $app->request()->getBody();
@@ -229,13 +229,16 @@ $app->post('/login/google', function() use ($app,$settings){
       $rec = array();
       $rec['image'] = filter_var($me['image']['url'], FILTER_VALIDATE_URL);
       $rec['userName'] = filter_var($me['displayName'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
-      $res['userId'] = $gplus_id;
+      $rec['userId'] = $gplus_id;
       insertRecord('users',$rec);
       $user = getUser($gplus_id);
       echo json_encode($user);
     }
 
   });
+$app->get('/',function() use ($app) {
+    $app->redirect('/index.php');
+});
 $app->run();
 
 
