@@ -3,6 +3,7 @@ var superUser = false;
 var resolves = {}; 
 var resolvesCookieName = "_resolves";
 var baseUrl = "http://streetviewgame.projecthost.hu";
+var apiUrl = "http://valahol.messze.net/server/rest";
 
 function zeroFill(i)
 {
@@ -34,7 +35,7 @@ function getUrlSearchParams() {
 }
 
 function loadComments()  {
-  $.getJSON('rest.php/puzzle/'+currentPuzzle["id"] + '/comment', function(data) {
+  $.getJSON(apiUrl + '/puzzle/'+currentPuzzle["id"] + '/comment', function(data) {
     $("#commentList").html(data.length > 0 ? "<hr style='clear:both;'>" : "");
     $("#newCommentText").val("");
     
@@ -59,7 +60,7 @@ function renderPuzzle(puzzle) {
       row += "<div class = 'thumnailOverlayRect'></div>";
       row += "<img class = 'thumnailOverlay' src='style/resolved.png'>";
     }  
-    row += "<img src='rest.php/puzzle/" + key + "/thumbnail' title='" + puzzle["label"] + "' alt='" + puzzle["label"] + "'>";
+    row += "<img src='" + apiUrl + "/puzzle/" + key + "/thumbnail' title='" + puzzle["label"] + "' alt='" + puzzle["label"] + "'>";
 
   row += "</a><br>";
 
@@ -84,7 +85,7 @@ function renderPuzzle(puzzle) {
     if (confirm("Biztos, hogy törölni szeretnéd ezt a rejtvényt? ("+puzzle["label"]+")")){
       $.ajax({
         type: 'DELETE',
-        url: 'rest.php/puzzle/'+key ,
+        url: apiUrl + '/puzzle/'+key ,
         success: function(result) {
           console.log("Sikerült törölni a rejtvényt! ("+result+")");
           loadPuzzles();
@@ -104,7 +105,7 @@ function renderPuzzle(puzzle) {
 function loadPuzzles() {
 
   currentPuzzle = null;
-  $.getJSON('rest.php/puzzles?userId=' + currentProfile.id, function(data) {
+  $.getJSON(apiUrl + '/puzzle/all', function(data) {
     
     $("#answerBox").fadeOut("slow");
     $("#commentBox").fadeOut("slow");
@@ -201,7 +202,8 @@ function checkanswer() {
       if (currentProfile) {
         $.ajax({
           type: 'POST',
-          url: 'rest.php/puzzle/'+currentPuzzle.id+'/solution',
+          contentType : 'application/json; charset=utf-8',
+          url: apiUrl + '/puzzle/'+currentPuzzle.id+'/solution',
           data: JSON.stringify(resolution),
           success: function(result) {
             console.log("Sikerült feltölteni a megfejtést!");
@@ -231,7 +233,8 @@ function checkanswer() {
           
       $.ajax({
         type: 'POST',
-        url: 'rest.php/puzzle/' + currentPuzzle.id + '/solution',
+        contentType : 'application/json; charset=utf-8',
+        url: apiUrl + '/puzzle/' + currentPuzzle.id + '/solution',
         data: JSON.stringify(wrongTipp),
         success: function(result) {
           console.log("Sikerült feltölteni a rossz választ!");
@@ -311,25 +314,20 @@ function submitPuzzle() {
     "pitch": pov.pitch
   };
         
-  type = '';
   data = '';
   url = '';
-    if ( puzzleId > 0) {
-	type = 'PUT';
-	data = puzzle;
-	url = 'rest.php/puzzle/' + puzzleId;
-    } else {
-	puzzle["userId"] = currentProfile.id;
-	puzzle["date"] = new Date().getTime();
-	type = 'POST';
-	url = 'rest.php/puzzle';
-	data = JSON.stringify(puzzle);
-    }
-   
+  if ( puzzleId > 0) {
+    url = apiUrl + '/puzzle/' + puzzleId;
+  } else {
+    url = apiUrl + '/puzzle';
+  }
+  puzzle["userId"] = currentProfile.id;
+  data = JSON.stringify(puzzle);
 
   $.ajax({
-    type: type,
+    type: 'POST',
     url: url,
+    contentType : 'application/json; charset=utf-8',
     data: data,
     success: function(result) {
       console.log("Sikerült feltölteni a rejtvényt! (result:"+result+")");
@@ -366,7 +364,7 @@ function submitComment() {
           
   $.ajax({
     type: 'POST',
-    url: 'rest.php/puzzle/' + currentPuzzle["id"] + '/comment',
+    url: apiUrl + '/puzzle/' + currentPuzzle["id"] + '/comments',
     data: JSON.stringify(comment),
     success: function(result) {
       console.log("Sikerült feltölteni a kommentet! (result:"+result+")");
@@ -428,7 +426,7 @@ function startCreatingPuzzle() {
 function loadUser(){
     $.ajax({
 	dataType: "json",
-	url: 'rest.php/user',
+	url: apiUrl + '/user',
 	success: function(data) {
 	    console.log("User is logged in " + data);
 	    currentProfile = data;
@@ -444,7 +442,7 @@ function loadUser(){
 function initGame() {
     $.ajax({
 	dataType: "json",
-	url: 'rest.php/puzzle/'+urlSearchParams.puzzle,
+	url: apiUrl + '/puzzle/'+urlSearchParams.puzzle,
 	success: function(data) {
 	    showPuzzle(data);
 	},
@@ -473,7 +471,7 @@ $(document).ready(function() {
   if (urlSearchParams.puzzle) {
     $.ajax({
 	dataType: "json",
-	url: 'rest.php/puzzle/'+urlSearchParams.puzzle,
+	url: apiUrl + '/puzzle/'+urlSearchParams.puzzle,
 	success: function(data) {
 	    showPuzzle(data);
 	},

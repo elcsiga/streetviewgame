@@ -83,7 +83,7 @@ var helper = (function() {
 	    $.ajax({
 		dataType: 'json',
 		type: 'POST',
-		url: 'rest.php/login/google',
+		url: apiUrl + '/auth/google',
 		success: function(result) {
 		    // Handle or verify the server response if necessary.
 		    
